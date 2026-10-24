@@ -374,6 +374,156 @@
             font-size: 24px;
             margin-right: 8px;
         }
+
+        .review-screen {
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .review-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .review-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .review-subtitle {
+            font-size: 14px;
+            opacity: 0.7;
+        }
+
+        .review-item {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.03);
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .review-item {
+                background: rgba(255, 255, 255, 0.05);
+            }
+        }
+
+        .review-item.correct {
+            border-left-color: #10b981;
+        }
+
+        .review-item.incorrect {
+            border-left-color: #ef4444;
+        }
+
+        .review-question-text {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .review-answers {
+            margin-bottom: 12px;
+        }
+
+        .review-answer {
+            font-size: 14px;
+            margin-bottom: 6px;
+            padding: 8px;
+            border-radius: 6px;
+            background: rgba(0, 0, 0, 0.02);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .review-answer {
+                background: rgba(255, 255, 255, 0.02);
+            }
+        }
+
+        .review-answer.user-answer {
+            font-weight: 500;
+        }
+
+        .review-answer.user-answer.correct {
+            color: #047857;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .review-answer.user-answer.correct {
+                color: #86efac;
+            }
+        }
+
+        .review-answer.user-answer.incorrect {
+            color: #991b1b;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .review-answer.user-answer.incorrect {
+                color: #fca5a5;
+            }
+        }
+
+        .review-answer.correct-answer {
+            font-weight: 500;
+            color: #047857;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .review-answer.correct-answer {
+                color: #86efac;
+            }
+        }
+
+        .review-explanation {
+            margin-top: 12px;
+            padding: 12px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .review-explanation {
+                background: rgba(167, 139, 250, 0.1);
+            }
+        }
+
+        .review-pagination {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .review-pagination {
+                border-top-color: rgba(255, 255, 255, 0.1);
+            }
+        }
+
+        .review-page-info {
+            font-size: 14px;
+            opacity: 0.7;
+            margin-bottom: 15px;
+        }
+
+        .review-nav-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .review-nav-buttons button {
+            flex: 0 1 auto;
+            min-width: 120px;
+        }
+
+        .review-finish-button {
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -414,7 +564,28 @@
                 <div class="results-score" id="finalScore">0/10</div>
                 <div class="results-message" id="resultMessage">Amazing work!</div>
                 <div class="button-container">
-                    <button class="btn-primary" onclick="restartQuiz()">Take Quiz Again</button>
+                    <button class="btn-primary" onclick="startReview()">Review Answers</button>
+                    <button class="btn-secondary" onclick="restartQuiz()">Take Quiz Again</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="reviewContent" class="hidden">
+            <div class="review-screen">
+                <div class="review-header">
+                    <div class="review-title">📚 Review Your Answers</div>
+                    <div class="review-subtitle">Learn from each question</div>
+                </div>
+                <div id="reviewContainer"></div>
+                <div class="review-pagination">
+                    <div class="review-page-info" id="reviewPageInfo"></div>
+                    <div class="review-nav-buttons">
+                        <button id="reviewPrevBtn" class="btn-secondary" onclick="reviewPreviousQuestion()">← Previous</button>
+                        <button id="reviewNextBtn" class="btn-primary" onclick="reviewNextQuestion()">Next →</button>
+                    </div>
+                    <div class="button-container review-finish-button">
+                        <button class="btn-primary" onclick="restartQuiz()">Take Quiz Again</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -425,52 +596,62 @@
             {
                 question: "What is the largest planet in our solar system?",
                 options: ["Saturn", "Jupiter", "Neptune", "Uranus"],
-                correct: 1
+                correct: 1,
+                explanation: "Jupiter is the largest planet, with a mass more than twice that of all other planets combined. Its Great Red Spot is a storm larger than Earth itself."
             },
             {
                 question: "How many moons does Mars have?",
                 options: ["0", "1", "2", "4"],
-                correct: 2
+                correct: 2,
+                explanation: "Mars has two small moons: Phobos and Deimos. Both are irregularly shaped and are believed to be captured asteroids."
             },
             {
                 question: "What is the hottest planet in our solar system?",
                 options: ["Mercury", "Venus", "Mars", "Earth"],
-                correct: 1
+                correct: 1,
+                explanation: "Venus is hotter than Mercury due to its thick atmosphere creating a runaway greenhouse effect. Surface temperature reaches about 900°F (475°C)."
             },
             {
                 question: "Which spacecraft was the first to leave the solar system?",
                 options: ["Voyager 1", "Voyager 2", "Pioneer 10", "New Horizons"],
-                correct: 0
+                correct: 0,
+                explanation: "Voyager 1, launched in 1977, entered interstellar space in 2012 and continues sending data back to Earth today."
             },
             {
                 question: "What is the name of the nearest star to Earth?",
                 options: ["Sirius", "Proxima Centauri", "Alpha Centauri A", "Betelgeuse"],
-                correct: 1
+                correct: 1,
+                explanation: "Proxima Centauri is about 4.24 light-years away. Despite being the closest, it's too faint to see without a telescope."
             },
             {
                 question: "In what year did humans first land on the Moon?",
                 options: ["1965", "1967", "1969", "1971"],
-                correct: 2
+                correct: 2,
+                explanation: "Apollo 11 landed on the Moon on July 20, 1969. Neil Armstrong and Buzz Aldrin became the first humans to walk on the lunar surface."
             },
             {
                 question: "What is the smallest planet in our solar system?",
                 options: ["Mercury", "Mars", "Venus", "Pluto"],
-                correct: 0
+                correct: 0,
+                explanation: "Mercury is the smallest planet and closest to the Sun. It has extreme temperature variations and a thin atmosphere."
             },
             {
                 question: "Which gas makes up most of Jupiter's atmosphere?",
                 options: ["Oxygen", "Nitrogen", "Hydrogen", "Helium"],
-                correct: 2
+                correct: 2,
+                explanation: "Jupiter's atmosphere is composed primarily of hydrogen and helium, similar to the early composition of our Solar System."
             },
             {
                 question: "How long does light from the Sun take to reach Earth?",
                 options: ["8 minutes", "5 minutes", "12 minutes", "3 minutes"],
-                correct: 0
+                correct: 0,
+                explanation: "Light travels at about 186,000 miles per second, covering the 93 million miles between the Sun and Earth in approximately 8 minutes and 20 seconds."
             },
             {
                 question: "What is a group of stars called?",
                 options: ["Galaxy", "Universe", "Constellation", "Nebula"],
-                correct: 2
+                correct: 2,
+                explanation: "A constellation is a pattern of stars visible from Earth. Our Sun is one of 100-200 billion stars in the Milky Way galaxy."
             }
         ];
 
@@ -478,6 +659,7 @@
         let score = 0;
         let answered = new Array(questions.length).fill(false);
         let userAnswers = new Array(questions.length).fill(-1);
+        let reviewCurrentQuestion = 0;
 
         function updateProgress() {
             const progress = (currentQuestion + 1) / questions.length;
@@ -606,16 +788,77 @@
             document.getElementById("resultMessage").innerHTML = `${emoji} ${message}`;
         }
 
+        function startReview() {
+            reviewCurrentQuestion = 0;
+            document.getElementById("resultsContent").classList.add("hidden");
+            document.getElementById("reviewContent").classList.remove("hidden");
+            renderReviewQuestion();
+        }
+
+        function renderReviewQuestion() {
+            const q = questions[reviewCurrentQuestion];
+            const userAnswer = userAnswers[reviewCurrentQuestion];
+            const isCorrect = userAnswer === q.correct;
+
+            let html = `
+                <div class="review-item ${isCorrect ? 'correct' : 'incorrect'}">
+                    <div class="question-number">Question ${reviewCurrentQuestion + 1} of ${questions.length}</div>
+                    <div class="review-question-text">${q.question}</div>
+                    <div class="review-answers">
+                        <div class="review-answer user-answer ${isCorrect ? 'correct' : 'incorrect'}">
+                            ${isCorrect ? '✓' : '✗'} Your answer: <strong>${q.options[userAnswer]}</strong>
+                        </div>
+            `;
+
+            if (!isCorrect) {
+                html += `<div class="review-answer correct-answer">✓ Correct answer: <strong>${q.options[q.correct]}</strong></div>`;
+            }
+
+            html += `
+                    </div>
+                    <div class="review-explanation">
+                        <strong>Learn more:</strong> ${q.explanation}
+                    </div>
+                </div>
+            `;
+
+            document.getElementById("reviewContainer").innerHTML = html;
+            document.getElementById("reviewPageInfo").textContent = `Question ${reviewCurrentQuestion + 1} of ${questions.length}`;
+
+            updateReviewButtons();
+        }
+
+        function reviewNextQuestion() {
+            if (reviewCurrentQuestion < questions.length - 1) {
+                reviewCurrentQuestion++;
+                renderReviewQuestion();
+            }
+        }
+
+        function reviewPreviousQuestion() {
+            if (reviewCurrentQuestion > 0) {
+                reviewCurrentQuestion--;
+                renderReviewQuestion();
+            }
+        }
+
+        function updateReviewButtons() {
+            document.getElementById("reviewPrevBtn").disabled = reviewCurrentQuestion === 0;
+            document.getElementById("reviewNextBtn").disabled = reviewCurrentQuestion === questions.length - 1;
+        }
+
         function restartQuiz() {
             currentQuestion = 0;
             score = 0;
             answered = new Array(questions.length).fill(false);
             userAnswers = new Array(questions.length).fill(-1);
+            reviewCurrentQuestion = 0;
 
             document.getElementById("scoreValue").textContent = "0";
             document.getElementById("correctCount").textContent = "0";
             document.getElementById("quizContent").classList.remove("hidden");
             document.getElementById("resultsContent").classList.add("hidden");
+            document.getElementById("reviewContent").classList.add("hidden");
 
             renderQuestion();
         }
