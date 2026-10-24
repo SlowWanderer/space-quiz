@@ -11,8 +11,27 @@ on:
       - main
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Validate files
+        run: |
+          echo "✓ index.html exists"
+          [ -f index.html ] || exit 1
+          echo "✓ README.md exists"
+          [ -f README.md ] || exit 1
+          echo "✓ Workflow file exists"
+          [ -f .github/workflows/deploy.yml ] || exit 1
+          echo "Build validation passed!"
+
   deploy:
     runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    needs: build
     
     permissions:
       contents: read
@@ -35,4 +54,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-        if: github.event_name == 'push'
